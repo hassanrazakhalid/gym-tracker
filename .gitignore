@@ -1,0 +1,12 @@
+.emulator-data/
+*-debug.log
+.firebase/
+node_modules/
+dist/
+.angular/
+.DS_Store
+# Secrets: never commit these
+.env
+.env.emulator
+service-account*.json
+*-firebase-adminsdk-*.json

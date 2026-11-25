@@ -1,0 +1,182 @@
+:host {
+  display: block;
+  border-top: 1px solid var(--line);
+  transition: background-color 0.2s ease;
+}
+
+:host(.is-done) {
+  background: var(--surface-2);
+}
+
+:host(.is-pr) {
+  background: var(--gold-soft);
+}
+
+.cells {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 74px 58px 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 10px;
+  min-height: 54px;
+}
+
+.c-set {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.trophy {
+  color: var(--gold);
+  display: inline-flex;
+}
+
+.c-prev {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.c-input {
+  position: relative;
+}
+
+.cell-input {
+  width: 100%;
+  height: 42px;
+  border: 0;
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 23px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+}
+
+.cell-input::placeholder {
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.cell-input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--blue);
+  background: var(--surface);
+}
+
+:host(.is-done) .cell-input {
+  background: transparent;
+}
+
+/* Blue coaching cue: sits on the corner of the value it refers to. */
+.cue {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  background: var(--blue);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.c-effort {
+  display: flex;
+  justify-content: center;
+}
+
+.effort {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid var(--ink-3);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  padding: 0;
+  transition: transform 0.15s ease;
+}
+
+.effort:active {
+  transform: scale(0.9);
+}
+
+.effort--easy {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.effort--ideal {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--ink);
+}
+
+.effort--max {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.nudge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 10px 54px;
+}
+
+.nudge__group {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--r-s);
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nudge__group button,
+.nudge__remove {
+  width: 38px;
+  height: 36px;
+  border: 0;
+  background: none;
+  color: inherit;
+  display: grid;
+  place-items: center;
+}
+
+.nudge__remove {
+  margin-left: auto;
+  color: var(--ink-3);
+}
+
+.nudge__hint {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: var(--blue);
+}
+
+.missing {
+  padding: 0 12px 10px 54px;
+  font-size: 13px;
+  color: var(--red);
+  font-weight: 600;
+}

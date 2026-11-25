@@ -1,0 +1,193 @@
+@if (session.active(); as s) {
+  <header class="top">
+    <div class="top__row">
+      <a routerLink="/workout" class="icon-btn" aria-label="Back to workouts (the session keeps running)">
+        <app-icon name="chevron-left" />
+      </a>
+      <div class="top__title">
+        <h1 class="top__name">{{ s.name }}</h1>
+        <span class="top__timer num" role="timer">{{ elapsed() }}</span>
+      </div>
+      <a routerLink="/profile" class="avatar" aria-label="Profile">{{ initials() }}</a>
+      <button type="button" class="icon-btn" (click)="ui.optionsOpen.set(true)" aria-label="Workout options">
+        <app-icon name="more" [stroke]="3" />
+      </button>
+      <button type="button" class="btn btn--primary finish" (click)="ui.finishOpen.set(true)">Finish</button>
+    </div>
+    @if (session.totalExercises() > 0) {
+      <div class="top__progress">
+        <span class="faint">Exercise {{ session.currentPosition() }} of {{ session.totalExercises() }}</span>
+        <div class="progress-track" role="progressbar" aria-label="Exercises completed"
+          [attr.aria-valuenow]="session.doneExercises()" aria-valuemin="0" [attr.aria-valuemax]="session.totalExercises()">
+          <div class="progress-fill" [style.width.%]="progress()"></div>
+        </div>
+      </div>
+    }
+  </header>
+
+  <main class="body">
+    @if (session.completedSetCount() === 0 && session.totalExercises() > 0) {
+      <a class="warmup-cta" routerLink="/workout/routines/current/warmup">
+        <app-icon name="flame" />
+        <span class="warmup-cta__text">
+          <strong>Warm up first</strong>
+          <span>Mobility for today's muscles and ramp-up sets</span>
+        </span>
+        <app-icon name="chevron-right" class="faint" />
+      </a>
+    }
+    @for (view of session.groups(); track view.group.id) {
+      <section class="block" [class.block--superset]="view.isSuperset">
+        @if (view.isSuperset) {
+          <button type="button" class="superset-head" (click)="ui.toggleCollapsed(view.group.id)"
+            [attr.aria-expanded]="!ui.collapsed().has(view.group.id)">
+            <span class="superset-badge"><app-icon name="link" [size]="14" [stroke]="2.5" />Superset</span>
+            <span class="superset-names">{{ groupName(view) }}</span>
+            <app-icon [name]="ui.collapsed().has(view.group.id) ? 'chevron-down' : 'chevron-up'" [size]="18" />
+          </button>
+        }
+
+        @if (!view.isSuperset || !ui.collapsed().has(view.group.id)) {
+          @for (ex of view.exercises; track ex.id) {
+            <app-exercise-card [item]="ex" />
+          }
+          <footer class="block__foot">
+            <button type="button" class="btn btn--ghost" (click)="session.addSet(view.group.id)">
+              <app-icon name="plus" [size]="18" />Add set
+            </button>
+            <button type="button" class="rest-chip" (click)="ui.restFor.set(view.group.id)"
+              [attr.aria-label]="'Rest ' + formatClock(view.group.restSeconds) + '. Change rest time'">
+              <app-icon name="timer" [size]="16" />Rest {{ formatClock(view.group.restSeconds) }}
+            </button>
+          </footer>
+        }
+      </section>
+    } @empty {
+      <div class="empty">
+        <h2>Nothing here yet</h2>
+        <p class="muted">Add your first exercise to start logging sets.</p>
+      </div>
+    }
+
+    <button type="button" class="btn btn--block btn--lg add-ex" (click)="ui.picker.set({ mode: 'add' })">
+      <app-icon name="plus" />Add exercise
+    </button>
+  </main>
+
+  <app-rest-bar />
+  <app-effort-sheet />
+  <app-exercise-picker
+    [open]="!!ui.picker()"
+    [currentId]="pickerCurrentId()"
+    [exclude]="inWorkout()"
+    (picked)="onPicked($event)"
+    (closed)="ui.picker.set(null)"
+  />
+
+  <!-- Exercise options -->
+  <app-sheet [open]="!!ui.menuFor()" [title]="menuExercise()?.exercise?.name ?? ''" (closed)="ui.menuFor.set(null)">
+    @if (menuExercise(); as m) {
+      <div class="sheet-actions">
+        <button type="button" class="sheet-action" (click)="menuAction('guide')"><app-icon name="info" />Form guide</button>
+        @if (m.view.isSuperset) {
+          <button type="button" class="sheet-action" (click)="menuAction('split')"><app-icon name="split" />Split superset</button>
+        } @else if (!m.isLast) {
+          <button type="button" class="sheet-action" (click)="menuAction('join')"><app-icon name="link" />Superset with next exercise</button>
+        }
+        <button type="button" class="sheet-action" (click)="menuAction('reorder')"><app-icon name="reorder" />Reorder exercises</button>
+        <button type="button" class="sheet-action" (click)="menuAction('history')"><app-icon name="history" />Exercise history</button>
+        <button type="button" class="sheet-action sheet-action--danger" (click)="menuAction('remove')"><app-icon name="trash" />Remove exercise</button>
+      </div>
+    }
+  </app-sheet>
+
+  <!-- Form guide -->
+  <app-sheet [open]="!!guideExercise()" [title]="guideExercise()?.name ?? ''" (closed)="ui.formGuideFor.set(null)">
+    @if (guideExercise(); as g) {
+      <app-exercise-thumb class="guide-media" [exercise]="g" [animate]="true" />
+      <p class="muted guide-meta">{{ g.muscle }}, {{ g.equipment.toLowerCase() }}. Aim for {{ g.repRange.min }}–{{ g.repRange.max }} reps.</p>
+      <ol class="guide">
+        @for (step of g.formGuide; track $index) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    }
+  </app-sheet>
+
+  <!-- Rest time -->
+  <app-sheet [open]="!!restGroup()" title="Rest time" (closed)="ui.restFor.set(null)">
+    @if (restGroup(); as r) {
+      <p class="muted">
+        The timer starts after you finish
+        {{ r.isSuperset ? 'a full round of ' + groupName(r) : 'each set of ' + groupName(r) }}.
+      </p>
+      <div class="rest-edit">
+        <button type="button" class="btn" (click)="session.setRest(r.group.id, r.group.restSeconds - 15)" aria-label="15 seconds less">−15s</button>
+        <span class="rest-edit__value num">{{ formatClock(r.group.restSeconds) }}</span>
+        <button type="button" class="btn" (click)="session.setRest(r.group.id, r.group.restSeconds + 15)" aria-label="15 seconds more">+15s</button>
+      </div>
+      <div class="chip-row rest-presets" role="group" aria-label="Presets">
+        @for (p of restPresets; track p) {
+          <button type="button" class="chip" [attr.aria-pressed]="r.group.restSeconds === p" (click)="session.setRest(r.group.id, p)">{{ formatClock(p) }}</button>
+        }
+      </div>
+    }
+  </app-sheet>
+
+  <!-- Reorder -->
+  <app-sheet [open]="ui.reorderOpen()" title="Reorder exercises" (closed)="ui.reorderOpen.set(false)">
+    <p class="muted reorder-hint">Supersets move together.</p>
+    <ol class="reorder">
+      @for (view of session.groups(); track view.group.id; let first = $first, last = $last) {
+        <li class="reorder__item">
+          <span class="reorder__name">
+            @if (view.isSuperset) { <app-icon name="link" [size]="15" /> }
+            {{ groupName(view) }}
+          </span>
+          <button type="button" class="icon-btn" [disabled]="first" (click)="session.moveGroup(view.group.id, -1)"
+            [attr.aria-label]="'Move ' + groupName(view) + ' up'"><app-icon name="chevron-up" /></button>
+          <button type="button" class="icon-btn" [disabled]="last" (click)="session.moveGroup(view.group.id, 1)"
+            [attr.aria-label]="'Move ' + groupName(view) + ' down'"><app-icon name="chevron-down" /></button>
+        </li>
+      }
+    </ol>
+    <button type="button" class="btn btn--dark btn--block" (click)="ui.reorderOpen.set(false)">Done</button>
+  </app-sheet>
+
+  <!-- Finish -->
+  <app-sheet [open]="ui.finishOpen()" title="Finish workout?" (closed)="ui.finishOpen.set(false)">
+    @if (session.completedSetCount() === 0) {
+      <p class="muted finish-copy">You haven't completed any sets yet. Finishing now discards this workout.</p>
+      <div class="stack">
+        <button type="button" class="btn btn--danger btn--block" (click)="openDiscard()">Discard workout</button>
+        <button type="button" class="btn btn--block" (click)="ui.finishOpen.set(false)">Keep going</button>
+      </div>
+    } @else {
+      @if (session.incompleteSetCount() > 0) {
+        <p class="muted finish-copy">
+          {{ session.incompleteSetCount() }} {{ session.incompleteSetCount() === 1 ? 'set isn\'t' : 'sets aren\'t' }}
+          marked complete and won't be saved.
+        </p>
+      } @else {
+        <p class="muted finish-copy">Every set is logged. Nice work.</p>
+      }
+      <div class="stack">
+        <button type="button" class="btn btn--primary btn--block btn--lg" (click)="finish()">Finish and save</button>
+        <button type="button" class="btn btn--block" (click)="ui.finishOpen.set(false)">Keep going</button>
+        <button type="button" class="btn btn--danger btn--block" (click)="openDiscard()">Discard workout</button>
+      </div>
+    }
+  </app-sheet>
+
+  <!-- Workout options -->
+  <app-sheet [open]="ui.optionsOpen()" [title]="s.name + ' options'" (closed)="ui.optionsOpen.set(false)">
+    <div class="sheet-actions">
+      <a class="sheet-action" routerLink="/workout/routines/current/warmup" (click)="ui.optionsOpen.set(false)"><app-icon name="flame" />Warm-up</a>
+      <button type="button" class="sheet-action" (click)="openReorder()"><app-icon name="reorder" />Reorder exercises</button>
+      <button type="button" class="sheet-action" (click)="ui.optionsOpen.set(false); ui.picker.set({ mode: 'add' })"><app-icon name="plus" />Add exercise</button>
+      <button type="button" class="sheet-action sheet-action--danger" (click)="openDiscard()"><app-icon name="trash" />Discard today's workout</button>
+    </div>
+  </app-sheet>
+
+  <app-discard-sheet [open]="ui.discardOpen()" (closed)="ui.discardOpen.set(false)" />
+}

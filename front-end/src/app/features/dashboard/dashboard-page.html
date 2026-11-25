@@ -1,0 +1,120 @@
+<div class="page">
+  <header class="hello">
+    <div>
+      <p class="faint">{{ dateLabel }}</p>
+      <h1 class="page-title">{{ greeting() }}</h1>
+    </div>
+    <a routerLink="/profile" class="avatar" aria-label="Profile">{{ settings.name().slice(0, 1).toUpperCase() }}</a>
+  </header>
+
+  @if (isNew()) {
+    <section class="welcome">
+      <h2 class="welcome__title">Welcome. Let's get your first workout in.</h2>
+      <p>Pick a routine on the Workout tab, or load about nine weeks of sample data to see how everything looks once you've been training a while.</p>
+      <div class="welcome__actions">
+        <a class="btn btn--primary" routerLink="/workout">Choose a workout</a>
+        <button type="button" class="btn" [disabled]="loadingSample()" (click)="loadSample()">
+          {{ loadingSample() ? 'Loading…' : 'Load sample data' }}
+        </button>
+      </div>
+    </section>
+  }
+
+  <section class="week panel" aria-label="This week">
+    <div class="spread week__head">
+      <h2 class="week__title">This week</h2>
+      <span class="visually-hidden">Tap a day to see it and change what you train on that weekday.</span>
+      <span class="streak" [class.streak--off]="activity.streak() === 0">
+        <app-icon name="flame" [size]="18" />
+        {{ activity.streak() }} day{{ activity.streak() === 1 ? '' : 's' }} in a row
+      </span>
+    </div>
+    <ol class="days">
+      @for (d of activity.week(); track d.date) {
+        <li class="day" [class.day--today]="d.isToday" [class.day--future]="d.isFuture">
+          <button type="button" class="day__btn" (click)="selectedDay.set(d.date)"
+            [attr.aria-label]="dayLabel(d.date, d.weekdayIndex, d.count)">
+          <span class="day__wd">{{ d.weekday }}</span>
+          <svg class="ring" viewBox="0 0 36 36" [attr.aria-label]="d.count + ' of 4 done'" role="img">
+            <circle cx="18" cy="18" [attr.r]="ringR" class="ring__track" />
+            @if (d.count > 0) {
+              <circle cx="18" cy="18" [attr.r]="ringR" class="ring__fill" [class.ring__fill--full]="d.count === 4"
+                [attr.stroke-dasharray]="ringC" [attr.stroke-dashoffset]="ringOffset(d.count)" />
+            }
+            <text x="18" y="22.5" text-anchor="middle" class="ring__num">{{ d.dayOfMonth }}</text>
+          </svg>
+          <span class="day__plan" [class.day__plan--done]="d.workout">{{ planLabel(d.weekdayIndex) }}</span>
+          </button>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="panel panel--flush checklist" aria-labelledby="checklist-title">
+    <div class="spread checklist__head">
+      <h2 id="checklist-title" class="checklist__title">Today's checklist</h2>
+      <span class="faint num count">{{ activity.today().count }}/4 completed</span>
+    </div>
+
+    <button type="button" class="list-row item" [class.item--done]="activity.today().checkIn" (click)="checkInOpen.set(true)">
+      <span class="tick">@if (activity.today().checkIn) { <app-icon name="check" [size]="16" [stroke]="3" /> }</span>
+      <span class="list-row__main">
+        <span class="list-row__title">Nutrition check-in</span>
+        <span class="list-row__sub">{{ activity.today().checkIn ? 'Checked in' : 'Hunger, energy and yesterday, in 20 seconds' }}</span>
+      </span>
+      <app-icon name="chevron-right" class="faint" />
+    </button>
+
+    <button type="button" class="list-row item" [class.item--done]="activity.today().weight" (click)="weightOpen.set(true)">
+      <span class="tick">@if (activity.today().weight) { <app-icon name="check" [size]="16" [stroke]="3" /> }</span>
+      <span class="list-row__main">
+        <span class="list-row__title">Log your weight</span>
+        <span class="list-row__sub">{{ weightSub() }}</span>
+      </span>
+      <app-icon name="chevron-right" class="faint" />
+    </button>
+
+    <a routerLink="/nutrition" class="list-row item" [class.item--done]="activity.today().food">
+      <span class="tick">@if (activity.today().food) { <app-icon name="check" [size]="16" [stroke]="3" /> }</span>
+      <span class="list-row__main">
+        <span class="list-row__title">Update your food log</span>
+        <span class="list-row__sub">{{ foodSub() }}</span>
+      </span>
+      <app-icon name="chevron-right" class="faint" />
+    </a>
+
+    <a [routerLink]="session.active() ? '/session' : '/workout'" class="list-row item" [class.item--done]="activity.today().workout">
+      <span class="tick">@if (activity.today().workout) { <app-icon name="check" [size]="16" [stroke]="3" /> }</span>
+      <span class="list-row__main">
+        <span class="list-row__title">Complete your workout</span>
+        <span class="list-row__sub">{{ workoutSub() }}</span>
+      </span>
+      <app-icon name="chevron-right" class="faint" />
+    </a>
+  </section>
+
+  @if (insight(); as i) {
+    <section class="insight">
+      <app-icon name="trophy" [size]="26" />
+      <div>
+        <h2 class="insight__title">{{ i.title }}</h2>
+        <p>{{ i.body }}</p>
+      </div>
+    </section>
+  }
+
+  @if (nextLesson(); as l) {
+    <section>
+      <h2 class="section-title">Next lesson</h2>
+      <a class="panel lesson" [routerLink]="['/lessons', l.id]">
+        <span class="lesson__course faint">{{ l.course }}, {{ l.minutes }} min read</span>
+        <span class="lesson__title">{{ l.title }}</span>
+        <span class="muted">{{ l.summary }}</span>
+      </a>
+    </section>
+  }
+</div>
+
+<app-log-weight-sheet [open]="weightOpen()" (closed)="weightOpen.set(false)" />
+<app-check-in-sheet [open]="checkInOpen()" (closed)="checkInOpen.set(false)" />
+<app-day-sheet [date]="selectedDay()" (closed)="selectedDay.set(null)" />

@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "demo-gym-tracker",
+    "prod": "gym-tracker-67e17"
+  }
+}

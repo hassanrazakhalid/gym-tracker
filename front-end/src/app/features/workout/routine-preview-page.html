@@ -1,0 +1,98 @@
+<div class="page">
+  <button type="button" class="btn btn--ghost back" (click)="location.back()"><app-icon name="chevron-left" />Back</button>
+
+  @if (routine(); as r) {
+    <header class="head">
+      <p class="head__sched">{{ scheduled() }}</p>
+      <h1 class="head__name">{{ r.name }}</h1>
+      <p class="muted">{{ r.focus }}</p>
+      <dl class="facts">
+        <div><dt>Exercises</dt><dd class="num">{{ totals().exercises }}</dd></div>
+        <div><dt>Sets</dt><dd class="num">{{ totals().sets }}</dd></div>
+        <div><dt>Time</dt><dd class="num">~{{ r.estimatedMinutes }}<small>min</small></dd></div>
+      </dl>
+    </header>
+
+    <div class="actions">
+      <a class="btn btn--block warm" [routerLink]="['/workout/routines', r.id, 'warmup']">
+        <app-icon name="flame" [size]="18" />Warm-up
+      </a>
+      @if (runningThis()) {
+        <a class="btn btn--primary btn--block" routerLink="/session"><app-icon name="play" />Resume</a>
+      } @else {
+        <button type="button" class="btn btn--primary btn--block" [disabled]="!!session.active()" (click)="start()">
+          <app-icon name="play" />Start {{ r.name }}
+        </button>
+      }
+    </div>
+    @if (session.active() && !runningThis()) {
+      <p class="faint busy">{{ session.active()!.name }} is in progress. Finish or discard it to start this one.</p>
+    }
+
+    @if (isCustomized()) {
+      <div class="custom">
+        <span>You've swapped exercises in this routine. Changes apply every time you do {{ r.name }}.</span>
+        <button type="button" class="btn btn--ghost" (click)="restore()">Restore original</button>
+      </div>
+    }
+
+    <section class="list">
+      @for (b of blocks(); track b.key) {
+        <div class="block" [class.block--superset]="b.isSuperset">
+          @if (b.isSuperset) {
+            <span class="superset-badge"><app-icon name="link" [size]="14" [stroke]="2.5" />Superset</span>
+          }
+          @for (e of b.exercises; track e.block + '-' + e.index) {
+            <div class="ex">
+            <a class="ex__link" [routerLink]="['/exercise', e.ex.id]" [attr.aria-label]="e.ex.name + ' history'">
+              <app-exercise-thumb [exercise]="e.ex" />
+              <span class="ex__main">
+                <span class="ex__name">
+                  @if (e.letter) { <span class="letter">{{ e.letter }}</span> }
+                  {{ e.ex.name }}
+                </span>
+                <span class="ex__meta">{{ e.sets }} sets of {{ e.ex.repRange.min }}–{{ e.ex.repRange.max }} reps</span>
+                @if (e.last.length) {
+                  <span class="ex__last">
+                    <span class="faint">Last time</span>
+                    @for (s of e.last; track s.id) {
+                      <span class="set"><span [class]="'pip pip--' + s.effort"></span><span class="num">{{ s.text }}</span></span>
+                    }
+                  </span>
+                } @else {
+                  <span class="faint ex__last">No history yet</span>
+                }
+                @if (e.target) {
+                  <span class="ex__target">
+                    @if (e.direction) {
+                      <span class="cue"><app-icon [name]="e.direction === 'down' ? 'arrow-down' : 'arrow-up'" [size]="11" [stroke]="3" /></span>
+                    }
+                    Aim for <span class="num">{{ e.target }}</span>
+                  </span>
+                }
+                @if (e.swappedFrom) {
+                  <span class="faint swapped">Swapped from {{ e.swappedFrom }}</span>
+                }
+              </span>
+            </a>
+            <button type="button" class="swap" (click)="swapping.set({ block: e.block, index: e.index, exerciseId: e.ex.id })"
+              [attr.aria-label]="'Swap ' + e.ex.name + ' for a similar ' + e.ex.muscle.toLowerCase() + ' exercise'">
+              <app-icon name="swap" [size]="18" /><span>Swap</span>
+            </button>
+            </div>
+          }
+          <div class="rest"><app-icon name="timer" [size]="14" />Rest {{ formatClock(b.restSeconds) }}{{ b.isSuperset ? ' after each round' : ' between sets' }}</div>
+        </div>
+      }
+    </section>
+    <app-exercise-picker
+      [open]="!!swapping()"
+      [currentId]="swapping()?.exerciseId ?? null"
+      [exclude]="inRoutine()"
+      (picked)="onSwap($event)"
+      (closed)="swapping.set(null)"
+    />
+  } @else {
+    <p class="muted">This routine doesn't exist. Pick one from the Workout tab.</p>
+  }
+</div>

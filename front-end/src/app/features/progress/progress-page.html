@@ -1,0 +1,148 @@
+<div class="page">
+  <h1 class="page-title">Progress</h1>
+
+  <section class="panel goal">
+    <div class="spread">
+      <span class="goal__label">Current goal</span>
+      <button type="button" class="btn btn--ghost" (click)="openGoal()">Edit</button>
+    </div>
+    <h2 class="goal__title">{{ goalView().title }}</h2>
+    <p class="goal__rate">
+      @if (goalView().pace; as pace) { {{ pace }}: }
+      {{ goalView().rate }}
+    </p>
+    <p class="faint">{{ goalView().started }}</p>
+  </section>
+
+  @if (weightView(); as w) {
+    <section class="panel">
+      <a routerLink="/progress/weight" class="card-link">
+        <span class="card-link__title"><app-icon name="scale" [size]="18" />Weight</span>
+        <app-icon name="chevron-right" class="faint" />
+      </a>
+      <div class="weight__figures">
+        <span class="num weight__now">{{ w.current }}<small>{{ settings.unitLabel() }}</small></span>
+        <span class="weight__meta">
+          <span class="num weight__change">{{ w.change }}</span>
+          <span class="faint">over {{ period() === 3650 ? 'all time' : period() + ' days' }}, last logged {{ w.when }}</span>
+        </span>
+      </div>
+      <app-line-chart [points]="w.points" label="Body weight over time" />
+      <div class="segmented period" role="group" aria-label="Period">
+        <button type="button" [attr.aria-pressed]="period() === 30" (click)="period.set(30)">1 month</button>
+        <button type="button" [attr.aria-pressed]="period() === 90" (click)="period.set(90)">3 months</button>
+        <button type="button" [attr.aria-pressed]="period() === 3650" (click)="period.set(3650)">All</button>
+      </div>
+    </section>
+  }
+
+  <div class="pair">
+    <a class="panel mini" routerLink="/nutrition">
+      <span class="card-link__title"><app-icon name="apple" [size]="18" />Nutrition</span>
+      <span class="num mini__big">{{ nutritionView().logged }}<small>/7</small></span>
+      <span class="faint mini__sub">days logged this week</span>
+      <span class="dots" aria-hidden="true">
+        @for (d of nutritionView().days; track d.date) {
+          <span class="dots__d" [class.dots__d--on]="d.logged"></span>
+        }
+      </span>
+      <span class="mini__foot"><span class="num">{{ nutritionView().remaining.toLocaleString() }}</span> kcal left today</span>
+    </a>
+
+    <a class="panel mini" routerLink="/workout">
+      <span class="card-link__title"><app-icon name="dumbbell" [size]="18" />Workouts</span>
+      <span class="num mini__big">{{ workoutView().consistency }}<small>%</small></span>
+      <span class="faint mini__sub">consistency, last 4 weeks</span>
+      <span class="bars" aria-hidden="true">
+        @for (w of workoutView().weeks; track w.start; let last = $last) {
+          <span class="bars__b" [class.bars__b--now]="last" [style.height.%]="barHeight(w.done) || 4" [title]="w.label + ': ' + w.done"></span>
+        }
+      </span>
+      <span class="mini__foot">
+        <span class="num">{{ workoutView().thisWeek }}</span> this week,
+        <span class="num pr">{{ workoutView().prs }}</span> PR{{ workoutView().prs === 1 ? '' : 's' }}
+      </span>
+    </a>
+  </div>
+
+  <section>
+    <h2 class="section-title">Bonus tracking</h2>
+    <div class="stack">
+      <button type="button" class="panel steps" (click)="stepsOpen.set(true)">
+        <span class="spread">
+          <span class="card-link__title"><app-icon name="steps" [size]="18" />Steps today</span>
+          <span class="faint">Goal {{ settings.stepGoal().toLocaleString() }}</span>
+        </span>
+        <span class="num steps__n">{{ steps.today().toLocaleString() }}</span>
+        <span class="progress-track"><span class="progress-fill" [style.width.%]="stepsPct()" style="display:block"></span></span>
+      </button>
+
+      <section class="panel">
+        <div class="spread">
+          <span class="card-link__title"><app-icon name="camera" [size]="18" />Progress photos</span>
+          <label class="btn btn--ghost">
+            <app-icon name="plus" [size]="18" />Add photo
+            <input type="file" accept="image/*" class="visually-hidden" (change)="addPhoto($event)" />
+          </label>
+        </div>
+        @if (photoError()) { <p class="error" role="alert">{{ photoError() }}</p> }
+        @if (photos.photos().length) {
+          <ul class="photos">
+            @for (p of photos.photos(); track p.id) {
+              <li>
+                <img [src]="p.dataUrl" [alt]="'Progress photo from ' + p.date" />
+                <span class="photos__date">{{ p.date }}</span>
+                <button type="button" class="photos__rm" (click)="photos.remove(p.id)" [attr.aria-label]="'Delete photo from ' + p.date">
+                  <app-icon name="x" [size]="14" [stroke]="2.5" />
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="muted photos__empty">Take a photo every couple of weeks in the same spot and light. Changes the scale misses show up here.</p>
+        }
+      </section>
+    </div>
+  </section>
+</div>
+
+<app-sheet [open]="goalOpen()" title="Edit goal" (closed)="goalOpen.set(false)">
+  <div class="stack">
+    <div class="field">
+      <span class="field__label">Goal</span>
+      <div class="segmented">
+        @for (t of goalTypes; track t) {
+          <button type="button" [attr.aria-pressed]="draftType() === t" (click)="draftType.set(t)">{{ GoalService.label(t) }}</button>
+        }
+      </div>
+    </div>
+    @if (draftType() !== 'maintain') {
+      <div class="field">
+        <span class="field__label">Pace</span>
+        <div class="segmented">
+          @for (p of paces; track p) {
+            <button type="button" [attr.aria-pressed]="draftPace() === p" (click)="draftPace.set(p)">
+              {{ p.charAt(0).toUpperCase() + p.slice(1) }}
+            </button>
+          }
+        </div>
+        <span class="faint">{{ draftRate() }}</span>
+      </div>
+    }
+    <label class="field">
+      <span class="field__label">Daily calories</span>
+      <input class="input" inputmode="numeric" [value]="draftCalories()" (change)="draftCalories.set(+$any($event.target).value || draftCalories())" />
+    </label>
+    <button type="button" class="btn btn--primary btn--block btn--lg" (click)="saveGoal()">Save goal</button>
+  </div>
+</app-sheet>
+
+<app-sheet [open]="stepsOpen()" title="Steps today" (closed)="stepsOpen.set(false)">
+  <form class="stack" (submit)="$event.preventDefault(); saveSteps(stepsInput.value)">
+    <label class="field">
+      <span class="field__label">Steps from your phone or watch</span>
+      <input #stepsInput class="input" inputmode="numeric" [value]="steps.today()" />
+    </label>
+    <button type="submit" class="btn btn--primary btn--block btn--lg">Save steps</button>
+  </form>
+</app-sheet>

@@ -1,0 +1,110 @@
+<div class="page">
+  <div class="spread">
+    <h1 class="page-title">Nutrition</h1>
+  </div>
+
+  <nav class="day" aria-label="Day">
+    <button type="button" class="icon-btn" (click)="shiftDay(-1)" aria-label="Previous day"><app-icon name="chevron-left" /></button>
+    <span class="day__label">{{ dayLabel() }}</span>
+    <button type="button" class="icon-btn" (click)="shiftDay(1)" [disabled]="isToday()" aria-label="Next day"><app-icon name="chevron-right" /></button>
+  </nav>
+
+  <section class="panel budget">
+    <div class="budget__main">
+      <span class="num budget__left" [class.budget__left--over]="remaining() < 0">{{ (remaining() < 0 ? -remaining() : remaining()).toLocaleString() }}</span>
+      <span class="muted">{{ remaining() < 0 ? 'kcal over target' : 'kcal left' }}</span>
+    </div>
+    <div class="meter">
+      <div class="spread meter__label">
+        <span>Calories</span>
+        <span class="num">{{ totals().calories.toLocaleString() }} / {{ target().toLocaleString() }}</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" [class.over]="remaining() < 0" [style.width.%]="calPct()"></div></div>
+    </div>
+    <div class="meter">
+      <div class="spread meter__label">
+        <span>Protein</span>
+        <span class="num">{{ totals().proteinG }} / {{ proteinTarget() }} g</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill protein" [style.width.%]="proteinPct()"></div></div>
+    </div>
+  </section>
+
+  @if (isToday() && !nutrition.checkedInToday()) {
+    <button type="button" class="panel checkin" (click)="checkInOpen.set(true)">
+      <app-icon name="clipboard" />
+      <span class="checkin__text">
+        <strong>Nutrition check-in</strong>
+        <span class="muted">How are hunger and energy today?</span>
+      </span>
+      <app-icon name="chevron-right" class="faint" />
+    </button>
+  }
+
+  @for (m of byMeal(); track m.meal) {
+    <section class="panel panel--flush meal">
+      <header class="meal__head">
+        <h2 class="meal__title">{{ m.meal }}</h2>
+        <span class="num faint">{{ m.calories.toLocaleString() }} kcal</span>
+      </header>
+      @for (f of m.items; track f.id) {
+        <div class="list-row food">
+          <div class="list-row__main">
+            <div class="list-row__title">{{ f.name }}</div>
+            <div class="list-row__sub">{{ f.proteinG }} g protein</div>
+          </div>
+          <span class="num kcal">{{ f.calories }}</span>
+          <button type="button" class="icon-btn" (click)="nutrition.remove(f.id)" [attr.aria-label]="'Remove ' + f.name">
+            <app-icon name="x" [size]="18" />
+          </button>
+        </div>
+      }
+      <button type="button" class="list-row add" (click)="openAdd(m.meal)">
+        <app-icon name="plus" [size]="18" />Add to {{ m.meal.toLowerCase() }}
+      </button>
+    </section>
+  }
+</div>
+
+<app-sheet [open]="!!addTo()" [title]="'Add to ' + (addTo() ?? '').toLowerCase()" [tall]="true" (closed)="addTo.set(null)">
+  <label class="search">
+    <app-icon name="search" [size]="18" />
+    <input type="search" placeholder="Search foods" aria-label="Search foods" [value]="query()" (input)="query.set($any($event.target).value)" />
+  </label>
+
+  <div class="panel panel--flush results">
+    @for (f of results(); track f.name) {
+      <button type="button" class="list-row" (click)="addFood(f)">
+        <span class="list-row__main">
+          <span class="list-row__title">{{ f.name }}</span>
+          <span class="list-row__sub">{{ f.serving }}, {{ f.proteinG }} g protein</span>
+        </span>
+        <span class="num kcal">{{ f.calories }}</span>
+        <app-icon name="plus" [size]="18" class="faint" />
+      </button>
+    } @empty {
+      <p class="list-row muted">No foods match. Add it yourself below.</p>
+    }
+  </div>
+
+  <form class="custom stack" (submit)="addCustom($event)">
+    <h3 class="custom__title">Add your own</h3>
+    <label class="field">
+      <span class="field__label">Food</span>
+      <input class="input" [value]="custom().name" (input)="setCustom('name', $any($event.target).value)" placeholder="e.g. Chicken burrito" />
+    </label>
+    <div class="custom__row">
+      <label class="field">
+        <span class="field__label">Calories</span>
+        <input class="input" inputmode="numeric" [value]="custom().calories" (input)="setCustom('calories', $any($event.target).value)" />
+      </label>
+      <label class="field">
+        <span class="field__label">Protein (g)</span>
+        <input class="input" inputmode="numeric" [value]="custom().protein" (input)="setCustom('protein', $any($event.target).value)" />
+      </label>
+    </div>
+    <button type="submit" class="btn btn--dark btn--block" [disabled]="!customValid()">Add food</button>
+  </form>
+</app-sheet>
+
+<app-check-in-sheet [open]="checkInOpen()" (closed)="checkInOpen.set(false)" />

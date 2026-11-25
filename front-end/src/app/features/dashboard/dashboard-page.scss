@@ -1,0 +1,253 @@
+.hello {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+
+  .page-title {
+    font-size: 36px;
+  }
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.welcome {
+  padding: 18px;
+  border-radius: var(--r-m);
+  background: var(--blue);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  p {
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 56ch;
+  }
+
+  .btn--primary {
+    background: #fff;
+    color: var(--blue);
+  }
+}
+
+.welcome__title {
+  font-size: 26px;
+}
+
+.welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.week {
+  padding: 14px 8px 8px;
+}
+
+.week__head {
+  padding: 0 4px 10px;
+}
+
+.week__title {
+  font-size: 20px;
+}
+
+.streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--red);
+}
+
+.streak--off {
+  color: var(--ink-3);
+}
+
+.days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day__btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: var(--r-s);
+  background: none;
+}
+
+.day__btn:hover {
+  background: var(--surface-2);
+}
+
+.day__btn:active .ring {
+  transform: rotate(-90deg) scale(0.92);
+}
+
+.day__wd {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.day--today .day__wd {
+  color: var(--blue);
+}
+
+.ring {
+  width: 40px;
+  height: 40px;
+  transform: rotate(-90deg);
+  transition: transform 0.12s ease;
+}
+
+.ring__track {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 3.5;
+}
+
+.day--today .ring__track {
+  stroke: var(--blue-soft);
+}
+
+.ring__fill {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.ring__fill--full {
+  stroke: var(--green);
+}
+
+.ring__num {
+  transform: rotate(90deg);
+  transform-origin: 18px 18px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  fill: var(--ink);
+}
+
+.day--future .ring__num {
+  fill: var(--ink-3);
+}
+
+.day__plan {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* The planned routine was actually done that day. */
+.day__plan--done {
+  color: var(--ink);
+}
+
+.checklist__head {
+  padding: 14px 16px 8px;
+}
+
+.checklist__title {
+  font-size: 22px;
+}
+
+.count {
+  font-size: 15px;
+}
+
+.item {
+  color: var(--ink);
+}
+
+.checklist__head + .list-row {
+  border-top: 0;
+}
+
+.tick {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-3);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.item--done .tick {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.item--done .list-row__title {
+  color: var(--ink-2);
+}
+
+/* The one loud moment on the dashboard: a recent lift worth celebrating. */
+.insight {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--r-m);
+  background: var(--ink);
+  color: #fff;
+
+  app-icon {
+    color: var(--yellow);
+    margin-top: 2px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.78);
+    margin-top: 4px;
+  }
+}
+
+.insight__title {
+  font-size: 26px;
+}
+
+.lesson {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.lesson__course {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lesson__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.1;
+}

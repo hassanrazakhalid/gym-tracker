@@ -1,0 +1,174 @@
+:host {
+  display: block;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 10px var(--pad) 12px 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.top__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.top__title {
+  display: flex;
+  flex-direction: column;
+}
+
+.top__name {
+  font-size: 30px;
+}
+
+.top__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 0 10px;
+  font-size: 14px;
+
+  span {
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+  }
+}
+
+.progress-fill {
+  background: var(--green);
+}
+
+.body {
+  padding: 8px 10px calc(var(--nav-h) + 110px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section {
+  font-size: 20px;
+  margin: 12px 4px 0;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--r-m);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 8px;
+}
+
+.head__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.head__name {
+  font-size: 21px;
+}
+
+.head__meta {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.cue {
+  margin: 0 12px 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 6px 12px 6px 10px;
+  border-top: 1px solid var(--line);
+  transition: background-color 0.2s ease;
+}
+
+.row.is-done {
+  background: var(--surface-2);
+}
+
+.row__n {
+  width: 28px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink-2);
+}
+
+.row__target {
+  flex: 1;
+  font-size: 21px;
+}
+
+.is-done .row__target {
+  color: var(--ink-3);
+}
+
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  min-width: 78px;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 18px;
+  border: 0;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.timer--on {
+  background: var(--blue);
+  color: #fff;
+
+  .num {
+    font-size: 19px;
+  }
+}
+
+.check {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid var(--ink-3);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.check--on {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.footer {
+  margin-top: 10px;
+}

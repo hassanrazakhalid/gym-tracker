@@ -1,0 +1,78 @@
+@if (plan(); as p) {
+  <header class="top">
+    <div class="top__row">
+      <button type="button" class="icon-btn" (click)="location.back()" aria-label="Back">
+        <app-icon name="chevron-left" />
+      </button>
+      <div class="top__title">
+        <h1 class="top__name">Warm-up</h1>
+        <span class="faint">for {{ source()!.name }}, about {{ p.minutes }} min</span>
+      </div>
+    </div>
+    <div class="top__progress">
+      <span class="faint">{{ doneCount() }} of {{ totalRounds() }} done</span>
+      <div class="progress-track" role="progressbar" aria-label="Warm-up progress"
+        [attr.aria-valuenow]="doneCount()" aria-valuemin="0" [attr.aria-valuemax]="totalRounds()">
+        <div class="progress-fill" [style.width.%]="totalRounds() ? (doneCount() / totalRounds()) * 100 : 0"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="body">
+    @for (section of p.sections; track section.title) {
+      <h2 class="section">{{ section.title }}</h2>
+      @for (item of section.items; track item.id) {
+        <article class="card">
+          <header class="head">
+            <app-exercise-thumb [exercise]="exerciseFor(item.exerciseId)" [id]="item.id" [name]="item.name" />
+            <div class="head__text">
+              <h3 class="head__name">{{ item.name }}</h3>
+              <span class="head__meta">{{ item.rounds.length }} {{ item.rounds.length === 1 ? 'round' : 'rounds' }}</span>
+            </div>
+          </header>
+          <p class="cue">{{ item.cue }}</p>
+
+          <div class="rows" role="table" [attr.aria-label]="item.name">
+            @for (r of item.rounds; track $index; let i = $index) {
+              <div class="row" role="row" [class.is-done]="isDone(item.id, i)">
+                <span class="row__n">{{ i + 1 }}</span>
+                <span class="row__target num">{{ target(r) }}</span>
+                @if (r.kind === 'time' && !isDone(item.id, i)) {
+                  <button type="button" class="timer" [class.timer--on]="isTiming(item.id, i)"
+                    (click)="startTimer(item.id, i, r.seconds)"
+                    [attr.aria-label]="isTiming(item.id, i) ? 'Stop timer' : 'Start ' + target(r) + ' timer'">
+                    @if (isTiming(item.id, i)) {
+                      <span class="num">{{ clockFor() }}</span>
+                    } @else {
+                      <app-icon name="play" [size]="14" />Start
+                    }
+                  </button>
+                }
+                <button type="button" class="check" [class.check--on]="isDone(item.id, i)" (click)="toggle(item.id, i)"
+                  [attr.aria-label]="(isDone(item.id, i) ? 'Undo ' : 'Done: ') + item.name + ' round ' + (i + 1)">
+                  @if (isDone(item.id, i)) { <app-icon name="check" [size]="16" [stroke]="3" /> }
+                </button>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    }
+
+    <div class="footer">
+      @if (isRunning()) {
+        <button type="button" class="btn btn--primary btn--lg btn--block" (click)="location.back()">
+          {{ allDone() ? 'Warmed up, back to workout' : 'Back to workout' }}
+        </button>
+      } @else if (source()!.routineId && !session.active()) {
+        <button type="button" class="btn btn--primary btn--lg btn--block" (click)="start()">
+          <app-icon name="play" />{{ allDone() ? 'Warmed up, start ' : 'Start ' }}{{ source()!.name }}
+        </button>
+      }
+    </div>
+  </main>
+} @else {
+  <div class="page">
+    <p class="muted">There's no workout to warm up for. Pick a routine on the Workout tab.</p>
+  </div>
+}
