@@ -1,3 +1,4 @@
+import type { NextFunction, Request, Response } from 'express';
 import { StandardSchemaValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -13,6 +14,14 @@ export function configureApp(app: NestExpressApplication): void {
     .split(',')
     .map((o) => o.trim())
     .filter(Boolean);
+  // Chrome asks before a public site (e.g. GitHub Pages) may call an API on this
+  // machine; this preflight header lets it offer that permission for allowed origins.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.headers['access-control-request-private-network'] && origins.includes(String(req.headers.origin))) {
+      res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    }
+    next();
+  });
   app.enableCors({ origin: origins, allowedHeaders: ['Authorization', 'Content-Type'] });
 }
 

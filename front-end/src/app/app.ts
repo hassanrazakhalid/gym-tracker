@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { NotifyService } from './core/api/api.service';
 import { DataService } from './core/services/data.service';
 import { PwaService } from './core/services/pwa.service';
@@ -10,7 +12,7 @@ import { PwaService } from './core/services/pwa.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="app-frame">
-      @if (data.status() === 'error') {
+      @if (data.status() === 'error' && !onLogin()) {
         <div class="load-error" role="alert">
           <p>{{ data.error() }}</p>
           <button type="button" class="btn btn--dark" (click)="retry()">Try again</button>
@@ -66,6 +68,16 @@ export class App {
   protected readonly notify = inject(NotifyService);
   // Created here so it catches the browser's install offer and new versions.
   protected readonly pwa = inject(PwaService);
+
+  private readonly router = inject(Router);
+  /** The sign-in page shows load errors in its own form. */
+  protected readonly onLogin = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map(() => this.router.url.startsWith('/login')),
+    ),
+    { initialValue: false },
+  );
 
   protected retry(): void {
     this.data.load().catch(() => undefined);
