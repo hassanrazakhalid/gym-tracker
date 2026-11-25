@@ -23,3 +23,10 @@ npm run build
 
 Weights are always stored in kg and converted to the user's unit (lbs or kg) for display.
 Sample data, deleting your data and signing out are on the Profile page.
+
+## Deploying
+
+Every push to `main` that changes `front-end/` builds the app and publishes it to GitHub Pages
+(`.github/workflows/pages.yml`), at https://hassanrazakhalid.github.io/gym-tracker/.
+The build sets the base href to the repository name and copies `index.html` to `404.html`
+so deep links work. The app still calls the API at `environment.apiUrl`.
