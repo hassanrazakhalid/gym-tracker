@@ -30,3 +30,12 @@ Every push to `main` that changes `front-end/` builds the app and publishes it t
 (`.github/workflows/pages.yml`), at https://hassanrazakhalid.github.io/gym-tracker/.
 The build sets the base href to the repository name and copies `index.html` to `404.html`
 so deep links work. The app still calls the API at `environment.apiUrl`.
+
+## Installable app (PWA)
+
+The production build includes a service worker (`ngsw-config.json`) and a web manifest
+(`public/manifest.webmanifest`). Installed, the app opens full screen from the home screen and
+starts offline; workout data still comes from the API. Profile has an **Install app** option
+(a prompt on Chrome/Edge/Android, steps on iPhone), and a banner offers **Reload** when a new
+version has been downloaded. Icons in `public/icons/` are rendered from one SVG. The service
+worker is off in `ng serve`; test it with a production build.

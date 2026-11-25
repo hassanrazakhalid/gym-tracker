@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { describeError } from '../../core/api/api.service';
 import { AuthService } from '../../core/api/auth.service';
 import { DataService } from '../../core/services/data.service';
+import { PwaService } from '../../core/services/pwa.service';
 import { SettingsService } from '../../core/services/settings.service';
 import { Sheet } from '../../shared/sheet';
 
@@ -41,6 +42,27 @@ type Confirm = 'sample' | 'delete' | null;
       </section>
 
       <section class="panel stack">
+        <h2 class="section-title">Install app</h2>
+        @if (pwa.installed()) {
+          <p class="muted">You're using the installed app.</p>
+        } @else if (pwa.canPrompt()) {
+          <p class="muted">Add Workout Tracker to your home screen. It opens full screen, like any other app.</p>
+          <button type="button" class="btn btn--primary" (click)="install()">Install app</button>
+        } @else if (pwa.platform === 'ios') {
+          <p class="muted">Add Workout Tracker to your home screen. It opens full screen, like any other app.</p>
+          <ol class="steps">
+            <li>Tap <strong>Share</strong> in Safari's toolbar.</li>
+            <li>Choose <strong>Add to Home Screen</strong>.</li>
+            <li>Tap <strong>Add</strong>.</li>
+          </ol>
+        } @else if (pwa.platform === 'android') {
+          <p class="muted">Open your browser's menu (⋮) and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</p>
+        } @else {
+          <p class="muted">In Chrome or Edge, click the install icon at the right end of the address bar. In Safari, choose File, then Add to Dock.</p>
+        }
+      </section>
+
+      <section class="panel stack">
         <h2 class="section-title">Your data</h2>
         <p class="muted">Try the app with about nine weeks of sample workouts, weigh-ins and meals. This replaces what's in your account.</p>
         <button type="button" class="btn" (click)="confirm.set('sample')">Load sample data</button>
@@ -73,11 +95,13 @@ type Confirm = 'sample' | 'delete' | null;
     .copy { margin-bottom: 16px; }
     .section-title { margin-bottom: 0; }
     .error { color: var(--red); font-weight: 600; margin-bottom: 12px; }
+    .steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
   `,
 })
 export class ProfilePage {
   protected readonly settings = inject(SettingsService);
   protected readonly data = inject(DataService);
+  protected readonly pwa = inject(PwaService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -109,6 +133,10 @@ export class ProfilePage {
     } finally {
       this.busy.set(false);
     }
+  }
+
+  protected async install(): Promise<void> {
+    await this.pwa.install();
   }
 
   protected async signOut(): Promise<void> {
