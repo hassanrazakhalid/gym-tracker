@@ -26,10 +26,9 @@ Sample data, deleting your data and signing out are on the Profile page.
 
 ## Deploying
 
-Every push to `main` that changes `front-end/` builds the app and publishes it to GitHub Pages
-(`.github/workflows/pages.yml`), at https://hassanrazakhalid.github.io/gym-tracker/.
-The build sets the base href to the repository name and copies `index.html` to `404.html`
-so deep links work. The app still calls the API at `environment.apiUrl`.
+The app is served by Firebase Hosting at https://gym-tracker-67e17.web.app, together with the API
+(see the root README: `cd backend && npm run deploy:firebase`). It calls the API at `/api` on its
+own origin; `ng serve` proxies `/api` to the local API on :3000 (`proxy.conf.json`).
 
 ## Installable app (PWA)
 

@@ -3,7 +3,8 @@
  * and the Firebase Auth emulator. No real accounts or data are touched.
  */
 export const environment = {
-  apiUrl: 'http://localhost:3000/api',
+  // Same origin: Firebase Hosting sends /api to the Cloud Function; `ng serve` proxies it to :3000.
+  apiUrl: '/api',
   firebase: {
     apiKey: 'demo-key',
     authDomain: 'demo-gym-tracker.firebaseapp.com',

@@ -3,6 +3,29 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "functions": [
+    {
+      "source": "backend/.deploy",
+      "codebase": "default",
+      "runtime": "nodejs24",
+      "predeploy": ["npm --prefix \"$PROJECT_DIR/backend\" run pack:functions"]
+    }
+  ],
+  "hosting": {
+    "public": "front-end/dist/front-end/browser",
+    "ignore": ["**/.*"],
+    "predeploy": ["npm --prefix \"$PROJECT_DIR/front-end\" run build"],
+    "rewrites": [
+      { "source": "/api/**", "function": { "functionId": "api", "region": "us-central1" } },
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "/@(index.html|ngsw-worker.js|ngsw.json|safety-worker.js|manifest.webmanifest)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
+  },
   "emulators": {
     "auth": { "host": "127.0.0.1", "port": 9099 },
     "firestore": { "host": "127.0.0.1", "port": 8080 },

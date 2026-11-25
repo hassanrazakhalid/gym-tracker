@@ -23,7 +23,9 @@
     "emulators": "firebase emulators:start --only auth,firestore --project demo-gym-tracker --config ../firebase.json --import=../.emulator-data --export-on-exit",
     "test:e2e:emu": "firebase emulators:exec --only auth,firestore --project demo-gym-tracker --config ../firebase.json 'npm run test:e2e'",
     "start:emu": "ENV_FILE=.env.emulator nest start --watch",
-    "deploy:firestore": "firebase deploy --only firestore --project gym-tracker-67e17 --config ../firebase.json"
+    "deploy:firestore": "firebase deploy --only firestore --project gym-tracker-67e17 --config ../firebase.json",
+    "pack:functions": "node scripts/pack-functions.mjs",
+    "deploy:firebase": "npx -y firebase-tools@15 deploy --only functions,hosting --project gym-tracker-67e17 --config ../firebase.json"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
@@ -31,7 +33,9 @@
     "@nestjs/core": "^12.0.1",
     "@nestjs/observe": "^0.3.0",
     "@nestjs/platform-express": "^12.0.1",
+    "express": "^5.3.0",
     "firebase-admin": "^14.5.1",
+    "firebase-functions": "^7.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^4.6.7"

@@ -7,7 +7,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module.js';
-import { configureApp } from '../src/main.js';
+import { configureApp } from '../src/setup.js';
 
 const AUTH_EMULATOR = 'http://127.0.0.1:9099';
 const PROJECT = 'demo-gym-tracker';

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { Global, Logger, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { App, cert, getApps, initializeApp, ServiceAccount } from 'firebase-admin/app';
+import { App, applicationDefault, cert, getApps, initializeApp, ServiceAccount } from 'firebase-admin/app';
 import { Auth, getAuth } from 'firebase-admin/auth';
 import { Firestore, getFirestore } from 'firebase-admin/firestore';
 
@@ -40,7 +40,11 @@ function loadKey(keyFile: string | undefined, projectId: string): ServiceAccount
       provide: FIREBASE_APP,
       inject: [ConfigService],
       useFactory: (config: ConfigService): App => {
-        const projectId = config.getOrThrow<string>('FIREBASE_PROJECT_ID');
+        // On Google's servers (Cloud Functions/Run) the project and credentials come
+        // from the environment; locally, from .env and this app's own key file.
+        const inCloud = !!process.env['K_SERVICE'];
+        const projectId = config.get<string>('FIREBASE_PROJECT_ID') ?? process.env['GCLOUD_PROJECT'];
+        if (!projectId) throw new Error('Set FIREBASE_PROJECT_ID in .env.');
         // The Admin SDK reads emulator hosts from process.env.
         for (const key of ['FIRESTORE_EMULATOR_HOST', 'FIREBASE_AUTH_EMULATOR_HOST']) {
           const value = config.get<string>(key);
@@ -49,6 +53,7 @@ function loadKey(keyFile: string | undefined, projectId: string): ServiceAccount
         const usingEmulator = !!process.env['FIRESTORE_EMULATOR_HOST'];
         if (getApps()[0]) return getApps()[0];
         if (usingEmulator) return initializeApp({ projectId });
+        if (inCloud) return initializeApp({ projectId, credential: applicationDefault() });
         return initializeApp({ projectId, credential: cert(loadKey(config.get<string>('FIREBASE_KEY_FILE'), projectId)) });
       },
     },

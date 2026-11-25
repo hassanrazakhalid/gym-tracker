@@ -6,6 +6,7 @@ import {
   Injectable,
   SetMetadata,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Auth } from 'firebase-admin/auth';
@@ -38,6 +39,8 @@ export const CurrentUser = createParamDecorator((_: unknown, ctx: ExecutionConte
  */
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
+  private readonly logger = new Logger('Auth');
+
   constructor(
     private readonly reflector: Reflector,
     @Inject(FIREBASE_AUTH) private readonly auth: Auth,
@@ -56,7 +59,10 @@ export class FirebaseAuthGuard implements CanActivate {
       const decoded = await this.auth.verifyIdToken(token);
       req.user = { uid: decoded.uid, email: decoded.email ?? null, name: (decoded['name'] as string) ?? null };
       return true;
-    } catch {
+    } catch (err) {
+      // Log why (never the token itself), so rejected sign-ins can be diagnosed.
+      const code = (err as { code?: string }).code ?? 'unknown';
+      this.logger.warn(`Rejected ID token: ${code}: ${(err as Error).message?.split('.')[0] ?? ''}`);
       throw new UnauthorizedException('Your session has expired. Sign in again.');
     }
   }

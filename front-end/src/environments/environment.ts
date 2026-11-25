@@ -4,7 +4,8 @@
  * For local work against the emulators, run `npm run start:emu` instead.
  */
 export const environment = {
-  apiUrl: 'http://localhost:3000/api',
+  // Same origin: Firebase Hosting sends /api to the Cloud Function; `ng serve` proxies it to :3000.
+  apiUrl: '/api',
   firebase: {
     apiKey: 'AIzaSyBZ0CiyyuYmJslp6kjceN4zm7dfalbYHRY',
     authDomain: 'gym-tracker-67e17.firebaseapp.com',

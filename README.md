@@ -8,19 +8,33 @@ weight, nutrition, progress and lessons.
 | --- | --- | --- |
 | `front-end/` | The app | Angular 22, Firebase Auth (web SDK) |
 | `backend/` | REST API | NestJS 12, Firestore + Firebase Auth via the Admin SDK |
-| `firebase.json` | Emulator and Firestore config | Firebase CLI 13 (pinned in `backend/`) |
+| `firebase.json` | Hosting, Cloud Function, Firestore and emulator config | Firebase CLI |
+
+## Live app
+
+**https://gym-tracker-67e17.web.app**: Firebase Hosting serves the app, and `/api/**` goes to the
+NestJS API running as a Cloud Function (`api`, us-central1, Node 24), so both share one origin.
+
+Deploy both with:
+
+```bash
+cd backend && npm run deploy:firebase
+```
+
+That builds the app, packs the API into `backend/.deploy/` (compiled code and production
+dependencies only, so `.env` and key files are never uploaded) and deploys with the Firebase CLI.
 
 ## Run it locally
 
-Needs Node 22+. There are two ways to run it.
+Needs Node 24+. There are two ways to run it.
 
-**Against the real Firebase project** (`gym-tracker-67e17`): the default. Real accounts and data.
+**Against the real Firebase project** (`gym-tracker-67e17`). Real accounts and data.
 
 ```bash
 # Needs backend/service-account.json (Firebase console → Project settings →
 # Service accounts → Generate new private key). It is gitignored; never commit it.
 cd backend && npm install && npm run start:dev    # API on http://localhost:3000/api
-cd front-end && npm install && npm start          # App on http://localhost:4200
+cd front-end && npm install && npm start          # App on http://localhost:4320 (proxies /api to :3000)
 ```
 
 **Against local emulators**: no Google account needed, nothing real is touched. Also needs Java 11+.
@@ -58,11 +72,11 @@ It **clears all emulator data first**, so don't run it while you have test accou
 
 ## The Firebase project
 
-- Project `gym-tracker-67e17` (alias `prod` in `.firebaserc`), Spark plan.
-- The API loads its key from `FIREBASE_KEY_FILE` in `backend/.env`, not from a machine-wide
-  `GOOGLE_APPLICATION_CREDENTIALS`, and refuses a key that belongs to another project.
+- Project `gym-tracker-67e17` (alias `prod` in `.firebaserc`), Blaze plan. Old function images
+  are deleted after a day by an Artifact Registry cleanup policy.
+- In the cloud the API uses the function's own service account. Locally it loads its key from
+  `FIREBASE_KEY_FILE` in `backend/.env`, not from a machine-wide `GOOGLE_APPLICATION_CREDENTIALS`,
+  and refuses a key that belongs to another project.
 - After changing `firestore.rules` or `firestore.indexes.json`: `cd backend && npm run deploy:firestore`.
 - The e2e tests are pinned to the emulators in `backend/vitest.config.e2e.ts`, so they can never
   wipe the real database.
-- The API still runs on your machine. To use the app away from it, deploy the API
-  (for example to Cloud Run) and point `apiUrl` in `environment.ts` at it.
