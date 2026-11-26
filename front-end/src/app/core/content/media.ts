@@ -9,7 +9,7 @@ const WITH_MEDIA = new Set([
   'lateral-raise', 'cable-lateral-raise', 'face-pull', 'rear-delt-fly', 'triceps-pushdown',
   'overhead-triceps-ext', 'skull-crusher', 'dips', 'lat-pulldown', 'assisted-pull-up', 'single-arm-pulldown',
   'barbell-row', 'chest-supported-row', 'cable-row', 'db-curl', 'hammer-curl', 'cable-curl', 'back-squat',
-  'leg-press', 'hack-squat', 'leg-extension', 'romanian-deadlift', 'db-rdl', 'seated-leg-curl',
+  'smith-squat', 'leg-press', 'hack-squat', 'leg-extension', 'romanian-deadlift', 'db-rdl', 'seated-leg-curl',
   'lying-leg-curl', 'hip-thrust', 'standing-calf-raise', 'seated-calf-raise', 'cable-crunch',
   'hanging-leg-raise',
   // Warm-up moves

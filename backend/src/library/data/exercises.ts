@@ -303,12 +303,23 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
   {
     id: 'back-squat', name: 'Back Squat', muscle: 'Quads', equipment: 'Barbell',
     repRange: { min: 5, max: 8 }, jointFriendly: false, startLb: 185,
-    alternatives: ['leg-press', 'hack-squat'],
+    alternatives: ['smith-squat', 'leg-press', 'hack-squat'],
     formGuide: [
       'Set the bar on your upper back and step back with feet shoulder width apart.',
       'Brace your core, then sit down and back between your hips.',
       'Go to at least parallel with knees tracking over your toes.',
       'Drive up through your whole foot.',
+    ],
+  },
+  {
+    id: 'smith-squat', name: 'Smith Machine Squat', muscle: 'Quads', equipment: 'Machine',
+    repRange: { min: 6, max: 10 }, jointFriendly: false, startLb: 135,
+    alternatives: ['back-squat', 'hack-squat', 'leg-press'],
+    formGuide: [
+      'Set the bar at shoulder height and step under it so it rests on your upper back.',
+      'Place your feet slightly in front of the bar, shoulder width apart.',
+      'Unhook the bar, brace, and sit down until your thighs are at least parallel.',
+      'Drive up through your whole foot, then twist the bar back onto the hooks.',
     ],
     videoUrl: 'https://www.youtube.com/shorts/OwGx43UO_0Y',
   },
@@ -325,7 +336,7 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
   {
     id: 'hack-squat', name: 'Hack Squat', muscle: 'Quads', equipment: 'Machine',
     repRange: { min: 8, max: 12 }, jointFriendly: true, startLb: 180,
-    alternatives: ['leg-press', 'back-squat'],
+    alternatives: ['leg-press', 'smith-squat', 'back-squat'],
     formGuide: [
       'Stand with your back on the pad and feet low on the platform.',
       'Squat down as deep as you can with control.',
