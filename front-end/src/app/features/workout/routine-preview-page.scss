@@ -126,6 +126,17 @@
   font-weight: 600;
 }
 
+.ex__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.video {
+  background: var(--bg);
+  color: var(--ink);
+}
+
 .swapped {
   font-size: 13px;
 }

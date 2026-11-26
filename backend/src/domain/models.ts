@@ -37,6 +37,8 @@ export interface Exercise {
   /** Ids of the closest substitutes, shown as recommended alternatives. */
   alternatives: string[];
   formGuide: string[];
+  /** Optional video guide (YouTube link), offered next to the written steps. */
+  videoUrl?: string;
   /** Photos of the start and end of the movement, or null when there are none. */
   media?: { start: string; end: string } | null;
 }

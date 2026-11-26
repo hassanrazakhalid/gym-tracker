@@ -75,16 +75,28 @@
                 }
               </span>
             </a>
+            <span class="ex__actions">
             <button type="button" class="swap" (click)="swapping.set({ block: e.block, index: e.index, exerciseId: e.ex.id })"
               [attr.aria-label]="'Swap ' + e.ex.name + ' for a similar ' + e.ex.muscle.toLowerCase() + ' exercise'">
               <app-icon name="swap" [size]="18" /><span>Swap</span>
             </button>
+            @if (e.ex.videoUrl) {
+              <button type="button" class="swap video" (click)="watching.set(e.ex)" [attr.aria-label]="'Watch the ' + e.ex.name + ' video guide'">
+                <app-icon name="play" [size]="16" /><span>Video</span>
+              </button>
+            }
+            </span>
             </div>
           }
           <div class="rest"><app-icon name="timer" [size]="14" />Rest {{ formatClock(b.restSeconds) }}{{ b.isSuperset ? ' after each round' : ' between sets' }}</div>
         </div>
       }
     </section>
+    <app-sheet [open]="!!watching()" [title]="watching()?.name ?? ''" (closed)="watching.set(null)">
+      @if (watching(); as w) {
+        <app-video-guide [url]="w.videoUrl!" [title]="w.name" [autoplay]="true" />
+      }
+    </app-sheet>
     <app-exercise-picker
       [open]="!!swapping()"
       [currentId]="swapping()?.exerciseId ?? null"

@@ -11,11 +11,14 @@ import { formatClock } from '../../core/util';
 import { ExerciseThumb } from '../../shared/exercise-thumb';
 import { ExercisePicker } from '../../shared/exercise-picker';
 import { Icon } from '../../shared/icon';
+import { Sheet } from '../../shared/sheet';
+import { VideoGuide } from '../../shared/video-guide';
+import { Exercise } from '../../core/models';
 
 /** Look at a routine before (or instead of) starting it. */
 @Component({
   selector: 'app-routine-preview-page',
-  imports: [RouterLink, Icon, ExerciseThumb, ExercisePicker],
+  imports: [RouterLink, Icon, ExerciseThumb, ExercisePicker, Sheet, VideoGuide],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './routine-preview-page.html',
   styleUrl: './routine-preview-page.scss',
@@ -34,6 +37,8 @@ export class RoutinePreviewPage {
   protected readonly formatClock = formatClock;
 
   /** Which exercise slot the swap picker is open for. */
+  /** The exercise whose video guide is open. */
+  protected readonly watching = signal<Exercise | null>(null);
   protected readonly swapping = signal<{ block: number; index: number; exerciseId: string } | null>(null);
 
   protected readonly routine = computed(() => this.library.routine(this.id()) ?? null);

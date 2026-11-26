@@ -310,6 +310,7 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
       'Go to at least parallel with knees tracking over your toes.',
       'Drive up through your whole foot.',
     ],
+    videoUrl: 'https://www.youtube.com/shorts/OwGx43UO_0Y',
   },
   {
     id: 'leg-press', name: 'Leg Press', muscle: 'Quads', equipment: 'Machine',

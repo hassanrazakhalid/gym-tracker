@@ -111,6 +111,9 @@
           <li>{{ step }}</li>
         }
       </ol>
+      @if (g.videoUrl) {
+        <app-video-guide class="guide-video" [url]="g.videoUrl" [title]="g.name" />
+      }
     }
   </app-sheet>
 

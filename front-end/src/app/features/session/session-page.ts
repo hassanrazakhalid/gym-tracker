@@ -8,6 +8,7 @@ import { formatClock, formatDuration } from '../../core/util';
 import { ExerciseThumb } from '../../shared/exercise-thumb';
 import { Icon } from '../../shared/icon';
 import { Sheet } from '../../shared/sheet';
+import { VideoGuide } from '../../shared/video-guide';
 import { DiscardSheet } from '../workout/discard-sheet';
 import { EffortSheet } from './effort-sheet';
 import { ExerciseCard } from './exercise-card';
@@ -19,7 +20,7 @@ const REST_PRESETS = [60, 90, 120, 150, 180, 240];
 
 @Component({
   selector: 'app-session-page',
-  imports: [RouterLink, Icon, ExerciseThumb, Sheet, ExerciseCard, EffortSheet, ExercisePicker, RestBar, DiscardSheet],
+  imports: [RouterLink, Icon, ExerciseThumb, Sheet, ExerciseCard, EffortSheet, ExercisePicker, RestBar, DiscardSheet, VideoGuide],
   providers: [SessionUi],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './session-page.html',
