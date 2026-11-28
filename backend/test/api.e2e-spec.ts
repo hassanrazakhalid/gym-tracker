@@ -79,7 +79,7 @@ describe('API (e2e, Firebase emulators)', () => {
   it('serves the library without signing in', async () => {
     const res = await api().get('/api/library').expect(200);
     expect(res.body.exercises.length).toBeGreaterThan(30);
-    expect(res.body.routines.map((r: { id: string }) => r.id)).toEqual(['push', 'pull', 'legs']);
+    expect(res.body.routines.map((r: { id: string }) => r.id)).toEqual(['push', 'pull', 'legs', 'lower-glutes']);
   });
 
   it('rejects requests without a valid token', async () => {

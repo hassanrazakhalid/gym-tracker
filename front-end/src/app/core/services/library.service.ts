@@ -6,7 +6,7 @@ import { mediaFor } from '../content/media';
 import { ROUTINES } from '../content/routines';
 
 export const MUSCLE_GROUPS: MuscleGroup[] = [
-  'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quads', 'Hamstrings', 'Glutes', 'Calves', 'Core',
+  'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Quads', 'Hamstrings', 'Glutes', 'Adductors', 'Calves', 'Core',
 ];
 
 /** Exercise library and routines. Read-only for now; the API will serve these. */

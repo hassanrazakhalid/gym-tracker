@@ -10,6 +10,7 @@ const REGION: Record<MuscleGroup, WarmupRegion> = {
   Quads: 'legs',
   Hamstrings: 'legs',
   Glutes: 'legs',
+  Adductors: 'legs',
   Calves: 'legs',
   Core: 'core',
 };

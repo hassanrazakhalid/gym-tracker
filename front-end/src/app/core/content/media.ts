@@ -11,7 +11,7 @@ const WITH_MEDIA = new Set([
   'barbell-row', 'chest-supported-row', 'cable-row', 'db-curl', 'hammer-curl', 'cable-curl', 'back-squat',
   'smith-squat', 'leg-press', 'hack-squat', 'leg-extension', 'romanian-deadlift', 'db-rdl', 'seated-leg-curl',
   'lying-leg-curl', 'hip-thrust', 'standing-calf-raise', 'seated-calf-raise', 'cable-crunch',
-  'hanging-leg-raise',
+  'hanging-leg-raise', 'deadlift', 'goblet-squat', 'hip-abduction', 'hip-adduction', 'leg-press-calf-raise',
   // Warm-up moves
   'arm-circles', 'band-pull-apart', 'thoracic-rotation', 'scap-push-up', 'cat-cow', 'bw-squat',
   'glute-bridge', 'walking-lunge', 'dead-bug', 'easy-cardio',

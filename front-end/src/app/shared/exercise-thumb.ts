@@ -12,6 +12,7 @@ const MUSCLE_TONE: Record<MuscleGroup, string> = {
   Quads: '#1B2130',
   Hamstrings: '#3E6E8E',
   Glutes: '#C2577F',
+  Adductors: '#A0603A',
   Calves: '#6B7A3A',
   Core: '#8A93A4',
 };

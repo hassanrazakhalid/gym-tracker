@@ -397,7 +397,7 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
   {
     id: 'hip-thrust', name: 'Hip Thrust', muscle: 'Glutes', equipment: 'Barbell',
     repRange: { min: 8, max: 12 }, jointFriendly: true, startLb: 185,
-    alternatives: ['romanian-deadlift'],
+    alternatives: ['romanian-deadlift', 'hip-abduction'],
     formGuide: [
       'Sit with your upper back against a bench and the bar over your hips.',
       'Drive through your heels to lift your hips until your body is flat.',
@@ -405,9 +405,61 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
     ],
   },
   {
+    id: 'deadlift', name: 'Barbell Deadlift', muscle: 'Glutes', equipment: 'Barbell',
+    repRange: { min: 6, max: 10 }, jointFriendly: false, startLb: 185,
+    alternatives: ['romanian-deadlift', 'db-rdl', 'hip-thrust'],
+    formGuide: [
+      'Stand with the bar over the middle of your feet, feet hip-width apart.',
+      'Hinge down and grip just outside your legs. Chest up, back flat, lats tight.',
+      'Push the floor away and drive your hips forward, keeping the bar against your legs.',
+      'Stand tall and squeeze your glutes, then hinge back down with the same flat back.',
+    ],
+  },
+  {
+    id: 'goblet-squat', name: 'Goblet Squat', muscle: 'Quads', equipment: 'Dumbbell',
+    repRange: { min: 10, max: 15 }, jointFriendly: true, startLb: 50,
+    alternatives: ['leg-press', 'smith-squat', 'hack-squat'],
+    formGuide: [
+      'Hold one dumbbell upright against your chest, elbows pointing down.',
+      'Stand a little wider than shoulder width, toes turned slightly out.',
+      'Sit down between your heels, keeping your chest up. The weight in front keeps your lower back neutral.',
+      'Drive up through your whole foot and squeeze your glutes at the top.',
+    ],
+  },
+  {
+    id: 'hip-abduction', name: 'Hip Abduction Machine', muscle: 'Glutes', equipment: 'Machine',
+    repRange: { min: 8, max: 12 }, jointFriendly: true, startLb: 90,
+    alternatives: ['hip-thrust'],
+    formGuide: [
+      'Sit with your back against the pad and the pads on the outside of your knees.',
+      'Push your knees out as far as you can, leaning slightly forward to bias the glutes.',
+      'Pause, then let your legs come back in slowly without letting the weights touch.',
+    ],
+  },
+  {
+    id: 'hip-adduction', name: 'Hip Adduction Machine', muscle: 'Adductors', equipment: 'Machine',
+    repRange: { min: 8, max: 12 }, jointFriendly: true, startLb: 90,
+    alternatives: ['goblet-squat'],
+    formGuide: [
+      'Sit with your back against the pad and the pads on the inside of your knees.',
+      'Squeeze your knees together, working your inner thighs.',
+      'Pause, then let your legs open slowly to a comfortable stretch.',
+    ],
+  },
+  {
+    id: 'leg-press-calf-raise', name: 'Leg Press Calf Raise', muscle: 'Calves', equipment: 'Machine',
+    repRange: { min: 10, max: 15 }, jointFriendly: true, startLb: 180,
+    alternatives: ['standing-calf-raise', 'seated-calf-raise'],
+    formGuide: [
+      'Sit in the leg press with the balls of your feet on the bottom edge of the platform, legs straight.',
+      'Keep the safety catches on and your knees soft but locked in place.',
+      'Lower your heels for a deep stretch, then press through your toes as far as you can.',
+    ],
+  },
+  {
     id: 'standing-calf-raise', name: 'Standing Calf Raise', muscle: 'Calves', equipment: 'Machine',
     repRange: { min: 10, max: 20 }, jointFriendly: true, startLb: 150,
-    alternatives: ['seated-calf-raise'],
+    alternatives: ['seated-calf-raise', 'leg-press-calf-raise'],
     formGuide: [
       'Stand on the edge of the platform with the pads on your shoulders.',
       'Lower your heels for a deep stretch.',
@@ -417,7 +469,7 @@ export const EXERCISES: (Exercise & { startLb: number })[] = [
   {
     id: 'seated-calf-raise', name: 'Seated Calf Raise', muscle: 'Calves', equipment: 'Machine',
     repRange: { min: 12, max: 20 }, jointFriendly: true, startLb: 90,
-    alternatives: ['standing-calf-raise'],
+    alternatives: ['standing-calf-raise', 'leg-press-calf-raise'],
     formGuide: [
       'Sit with the pad on your lower thighs and the balls of your feet on the plate.',
       'Lower your heels, then press up as high as you can.',

@@ -37,6 +37,18 @@ export const ROUTINES: Routine[] = [
       { restSeconds: 60, exercises: [{ exerciseId: 'standing-calf-raise', sets: 3 }, { exerciseId: 'cable-crunch', sets: 3 }] },
     ],
   },
+  {
+    id: 'lower-glutes',
+    name: 'Lower 2',
+    focus: 'Glutes focused',
+    estimatedMinutes: 55,
+    blocks: [
+      { restSeconds: 180, exercises: [{ exerciseId: 'deadlift', sets: 3 }] },
+      { restSeconds: 90, exercises: [{ exerciseId: 'goblet-squat', sets: 4 }, { exerciseId: 'lying-leg-curl', sets: 4 }] },
+      { restSeconds: 60, exercises: [{ exerciseId: 'hip-abduction', sets: 3 }, { exerciseId: 'hip-adduction', sets: 3 }] },
+      { restSeconds: 60, exercises: [{ exerciseId: 'leg-press-calf-raise', sets: 3 }] },
+    ],
+  },
 ];
 
 /** Planned routine for each weekday, Sunday = 0. Null is a rest day. */
